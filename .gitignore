@@ -1,0 +1,12 @@
+*.o
+*.bak
+ljsyslog
+ljsyslog.stripped
+*.gcda
+*.gcno
+result
+test_driver
+.config
+*.old
+*.swp
+.ccls-cache
