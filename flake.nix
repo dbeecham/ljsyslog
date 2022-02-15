@@ -23,6 +23,7 @@
             after = [ "nats.service" ];
             serviceConfig = {
               Type = "simple";
+              Restart = "always";
               ExecStart = "${self.defaultPackage.x86_64-linux}/bin/ljsyslog";
             };
           };
