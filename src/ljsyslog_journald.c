@@ -160,7 +160,7 @@ int ljsyslog_journald_event_log (
     char topic[512];
     int topic_len = 0;
 
-    topic_len = snprintf(topic, sizeof(topic), "%.*s.%.*s.%s.out",
+    topic_len = snprintf(topic, sizeof(topic), "ljsyslog.%.*s.%.*s.%s.out",
         ljsyslog->hostname_len, ljsyslog->hostname,
         tag_len, tag,
         ljsyslog_severity_str(severity)
