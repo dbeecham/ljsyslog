@@ -1,5 +1,6 @@
 {
     outputs = { self, nixpkgs, ...}: {
+
         defaultPackage.x86_64-linux = nixpkgs.legacyPackages.x86_64-linux.stdenv.mkDerivation {
             name = "ljsyslog";
             src = ./.;
@@ -13,5 +14,17 @@
               install --mode=0755 ljsyslog.stripped $out/bin/ljsyslog
             '';
         };
+
+        nixosModule = { pkgs, config, ... }: {
+          systemd.services.ljsyslog = {
+            wantedBy = [ "multi-user.target" ];
+            after = [ "nats.service" ];
+            serviceConfig = {
+              Type = "simple";
+              ExecStart = "${self.defaultPackage.x86_64-linux}/bin/ljsyslog";
+            };
+          };
+        };
+
     };
 }
