@@ -16,6 +16,8 @@
         };
 
         nixosModule = { pkgs, config, ... }: {
+
+          services.journald.forwardToSyslog = true;
           systemd.services.ljsyslog = {
             wantedBy = [ "multi-user.target" ];
             after = [ "nats.service" ];
@@ -24,6 +26,7 @@
               ExecStart = "${self.defaultPackage.x86_64-linux}/bin/ljsyslog";
             };
           };
+
         };
 
     };
