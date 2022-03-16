@@ -21,6 +21,7 @@
           systemd.services.ljsyslog = {
             wantedBy = [ "multi-user.target" ];
             after = [ "nats.service" ];
+            requires = [ "nats.service" ];
             serviceConfig = {
               Type = "simple";
               Restart = "always";
