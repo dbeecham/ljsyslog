@@ -25,6 +25,7 @@
             serviceConfig = {
               Type = "simple";
               Restart = "always";
+              RestartSec = "1sec";
               ExecStart = "${self.defaultPackage.x86_64-linux}/bin/ljsyslog";
             };
           };
