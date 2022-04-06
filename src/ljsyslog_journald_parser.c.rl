@@ -130,12 +130,12 @@
     # rfc3164 date field ("Feb 15 06:03:44")
     rfc3164_date := (
         ('Jan' | 'Feb' | 'Mar' | 'Apr' | 'May' | 'Jun' | 'Jul' | 'Aug' | 'Sep' | 'Oct' | 'Nov' | 'Dec')
-        ' '
+        space*
         digit{1,2}
-        ' '
+        space*
         digit{2} ':' digit{2} ':' digit{2}
         ' ' @{fgoto rfc3164_tag;}
-    ) $err{ syslog(LOG_WARNING, "%s:%d:%s: failed to parse date at %c", __FILE__, __LINE__, __func__, *p); return -1; };
+    ) $err{ syslog(LOG_WARNING, "%s:%d:%s: failed to parse date at '%c' (0x%02x)", __FILE__, __LINE__, __func__, *p); return -1; };
 
 
     # rfc3164 priority field
@@ -237,6 +237,18 @@ int ljsyslog_journald_parser_parse (
 {
     int ret = 0;
     div_t d = {0};
+
+#ifdef DEBUG
+    for (int i = 0; i < buf_len; i++) {
+        printf("%02x", buf[i]);
+    }
+    printf("\n");
+
+    for (int i = 0; i < buf_len; i++) {
+        printf("%c", buf[i]);
+    }
+    printf("\n");
+#endif
 
     const uint8_t * p = buf;
     const uint8_t * pe = buf + buf_len;
