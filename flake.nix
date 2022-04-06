@@ -1,36 +1,35 @@
 {
     outputs = { self, nixpkgs, ...}: {
 
-        defaultPackage.x86_64-linux = nixpkgs.legacyPackages.x86_64-linux.stdenv.mkDerivation {
-            name = "ljsyslog";
-            src = ./.;
-            depsBuildBuild = [ 
-              nixpkgs.legacyPackages.x86_64-linux.ragel 
-              nixpkgs.legacyPackages.x86_64-linux.kconfig-frontends 
-            ];
-            installPhase = ''
-              install -d --mode=0755 $out
-              install -d --mode=0755 $out/bin
-              install --mode=0755 ljsyslog.stripped $out/bin/ljsyslog
-            '';
-        };
+      packages.x86_64-linux.default = nixpkgs.lib.makeOverridable self.derivations.default {
+        inherit (nixpkgs.legacyPackages.x86_64-linux.stdenv) mkDerivation;
+        inherit (nixpkgs.legacyPackages.x86_64-linux) ragel kconfig-frontends;
+      };
 
-        nixosModule = { pkgs, config, ... }: {
-
-          services.journald.forwardToSyslog = true;
-          systemd.services.ljsyslog = {
-            wantedBy = [ "multi-user.target" ];
-            after = [ "nats.service" ];
-            requires = [ "nats.service" ];
-            serviceConfig = {
-              Type = "simple";
-              Restart = "always";
-              RestartSec = "1sec";
-              ExecStart = "${self.defaultPackage.x86_64-linux}/bin/ljsyslog";
-            };
-          };
-
-        };
+      derivations.default = {
+        mkDerivation,
+        ragel,
+        kconfig-frontends,
+        nats ? { host = "127.0.0.1"; port = "4222"; }
+      }: 
+      mkDerivation {
+        name = "ljsyslog";
+        src = ./.;
+        depsBuildBuild = [ 
+          ragel 
+          kconfig-frontends 
+        ];
+        makeFlags = [ 
+          "Q="
+          "CONFIG_NATS_HOST=\"${nats.host}\""
+          "CONFIG_NATS_PORT=\"${nats.port}\""
+        ];
+        installPhase = ''
+          install -d --mode=0755 $out
+          install -d --mode=0755 $out/bin
+          install --mode=0755 ljsyslog.stripped $out/bin/ljsyslog
+        '';
+      };
 
     };
 }
