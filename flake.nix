@@ -30,5 +30,20 @@
       '';
     };
 
+
+
+#    services.journald.forwardToSyslog = true;
+#    systemd.services.ljsyslog = {
+#      wantedBy = [ "multi-user.target" ];
+#      after = [ "nats.service" ];
+#      requires = [ "nats.service" ];
+#      serviceConfig = {
+#        Type = "simple";
+#        Restart = "always";
+#        RestartSec = "1sec";
+#        ExecStart = "${ljsyslog}/bin/ljsyslog";
+#      };
+#    };
+
   };
 }
